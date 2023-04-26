@@ -1,10 +1,16 @@
+import { useDispatch, useSelector } from "react-redux"
+import { login } from "./store/userSlice";
+import { store } from "./store/store";
+
+
+
 /**
  * POST User creditentials, then return User bearer JWT Token
- * @param username :string
+ * @param email :string
  * @param password :string
  * @returns User token
- */
-const postUserCredits = async (username: string, password: string) => {
+*/
+const PostUserCredits = async (email: string, password: string, dispatch: any) => {
     return await fetch(process.env.REACT_APP_API_URL + 'user/login', {
         method: 'POST',
         headers: {
@@ -12,15 +18,31 @@ const postUserCredits = async (username: string, password: string) => {
             'Accept': 'application/json',
         },
         body: JSON.stringify({
-            "email": username,
+            "email": email,
             "password": password
         })
     })
-        .catch(error => error.status)
-        .then((resp) => { return resp.json() })
-        .then((json) => { return json.body })
+        .then((res) => res.json())
+        .then((data) => {
+            if (data.status === 200) {
+                dispatch(
+                    login({
+                        'email': email,
+                        'token': data.body.token,
+                        'isConnected': true
+                    }))
+                return data;
+            } else if (data.status === 400) {
+                dispatch(login({
+                    'error': data.message
+                }))
+            }
+
+        })
+        .catch((err) => { console.log(err) })
 }
 
+
 export {
-    postUserCredits,
+    PostUserCredits,
 }

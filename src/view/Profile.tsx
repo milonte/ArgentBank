@@ -1,4 +1,15 @@
+import { useEffect } from "react"
+import { useSelector } from "react-redux"
+import { Navigate } from "react-router-dom"
+
 export default function Profile() {
+    const user = useSelector((state: any) => state.user)
+
+    if (!user.isConnected) {
+        return Navigate({ to: '/login', replace: true })
+    }
+
+
     return (
         <>
             <main className="main bg-dark">
