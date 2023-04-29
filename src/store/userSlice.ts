@@ -11,12 +11,12 @@ export const userSlice = createSlice({
     reducers: {
         login: (state, action) => {
             state.email = action.payload.email;
-            state.token = action.payload.token;
             if (action.payload.error) {
                 state.error = action.payload.error
             } else {
-                state.error = null
+                state.error = null;
                 state.isConnected = true;
+                state.token = action.payload.token;
             }
         },
         logout: (state) => {

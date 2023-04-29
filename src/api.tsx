@@ -1,7 +1,4 @@
-import { useDispatch, useSelector } from "react-redux"
 import { login } from "./store/userSlice";
-import { store } from "./store/store";
-
 
 
 /**
@@ -10,7 +7,12 @@ import { store } from "./store/store";
  * @param password :string
  * @returns User token
 */
-const PostUserCredits = async (email: string, password: string, dispatch: any) => {
+const PostUserCredits = async (
+    email: string,
+    password: string,
+    isRemembered: boolean,
+    dispatch: any
+) => {
     return await fetch(process.env.REACT_APP_API_URL + 'user/login', {
         method: 'POST',
         headers: {
@@ -25,12 +27,15 @@ const PostUserCredits = async (email: string, password: string, dispatch: any) =
         .then((res) => res.json())
         .then((data) => {
             if (data.status === 200) {
-                dispatch(
-                    login({
-                        'email': email,
-                        'token': data.body.token,
-                        'isConnected': true
-                    }))
+                const userCredits = {
+                    'email': email,
+                    'token': data.body.token,
+                    'isConnected': true
+                }
+                dispatch(login(userCredits))
+                if (isRemembered) {
+                    document.cookie = `USER=${JSON.stringify(userCredits)}`
+                }
                 return data;
             } else if (data.status === 400) {
                 dispatch(login({

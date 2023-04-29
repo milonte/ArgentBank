@@ -2,16 +2,20 @@ import { useNavigate } from "react-router-dom";
 import { PostUserCredits } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-
+import { login } from "../store/userSlice";
 
 export default function Login() {
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const navigate = useNavigate()
     const user = useSelector((state: any) => state.user)
     const dispatcher = useDispatch()
-    const navigate = useNavigate()
 
     useEffect(() => {
-        if (user.isConnected) {
-            navigate('/profile')
+        if (user && user.isConnected) {
+            setTimeout(() => {
+                setIsLoading(false)
+                navigate('/profile')
+            }, 1000)
         }
     }, [user])
 
@@ -20,7 +24,9 @@ export default function Login() {
         const form = e.target;
         const email: string = form.elements[0].value;
         const password: string = form.elements[1].value;
-        PostUserCredits(email, password, dispatcher)
+        const remember: boolean = form.elements[2].checked;
+        PostUserCredits(email, password, remember, dispatcher)
+        setIsLoading(true)
     }
 
     return (
@@ -39,7 +45,8 @@ export default function Login() {
                         <div className="input-remember">
                             <input type="checkbox" id="remember-me" /><label htmlFor="remember-me">Remember me</label>
                         </div>
-                        <div className="sign-in-error">{user.error}</div>
+                        {isLoading ? <div className="loading">...</div> : null}
+                        <div className="sign-in-error">{user?.error}</div>
                         <button className="sign-in-button">Sign In</button>
                     </form>
                 </section>
