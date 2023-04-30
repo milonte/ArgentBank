@@ -1,4 +1,10 @@
-export default function Profile() {
+import { ReactElement } from "react";
+
+/**
+ * User Profile page
+ * @returns ReactElement
+ */
+export default function Profile(): ReactElement {
     return (
         <>
             <main className="main bg-dark">

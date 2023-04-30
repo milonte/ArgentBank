@@ -1,36 +1,44 @@
 
 import './styles/main.css';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Location, NavigateFunction, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { ReactElement, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from './store/userSlice';
+import { UserInterface } from './models/UserInterface';
+import type { RootState, AppDispatch } from './store/store'
 
 
 /**
  * Default App function
 */
 export default function App(): ReactElement {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const user = useSelector((state: any) => state.user)
+  const dispatch: AppDispatch = useDispatch()
+  const navigate: NavigateFunction = useNavigate()
+  const location: Location = useLocation()
+  const user: UserInterface = useSelector((state: RootState) => state.user)
 
   // Get the current pathname
-  const pathname = location.pathname;
+  const pathname: string = location.pathname;
+
   // Get the current user registered in cookies
-  const rememberedUser = document.cookie ? JSON.parse(document.cookie.split("=")[1]) : null;
+  const rememberedUser: UserInterface | null = document.cookie ?
+    JSON.parse(document.cookie.split("=")[1]) : null;
+
   // Routes protected by an authentication
-  const authRequiredRoutes = [
+  const authRequiredRoutes: string[] = [
     "/profile",
   ]
 
   useEffect(() => {
     // If an user is registred in cookies, then store him 
-    if (rememberedUser && rememberedUser.isConnected) {
+    // And redirect user to dthe default authentified page
+    if ("/login" === pathname && rememberedUser && rememberedUser.isConnected) {
       dispatch(login(rememberedUser))
+      navigate('/profile', { replace: true })
     }
+
     // Back to the Login page if no user in protected route
     if (authRequiredRoutes.includes(pathname) && !user.isConnected) {
       navigate('/login', { replace: true })
@@ -39,7 +47,7 @@ export default function App(): ReactElement {
     else if ("/login" === pathname && user.isConnected) {
       navigate('/profile', { replace: true })
     }
-  }, [pathname, user])
+  }, [pathname])
 
 
   return (

@@ -1,4 +1,10 @@
-export default function Home() {
+import { ReactElement } from "react";
+
+/**
+ * Home Page
+ * @returns ReactElement
+ */
+export default function Home(): ReactElement {
 
     return (
         <>
