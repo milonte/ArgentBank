@@ -10,14 +10,10 @@ import Profile from "./view/Profile";
  * @param code | error statusCode
  * @returns Reponse
  */
-const NewErrorResponse = (message: string, code: number): Response => new Response(message, { status: code, statusText: message })
-
 const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
-        //errorElement: <ErrorPage />,
-
         children: [
             {
                 index: true,

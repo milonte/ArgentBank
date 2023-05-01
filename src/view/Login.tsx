@@ -1,5 +1,5 @@
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { PostUserCredits } from "../api";
+import { GetUserToken } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { FormEvent, ReactElement, useEffect, useState } from "react";
 import { AppDispatch, RootState } from "../store/store";
@@ -37,7 +37,7 @@ export default function Login(): ReactElement {
         const email: string = formInputs[0]?.value
         const password: string = formInputs[1]?.value;
         const remember: boolean = formInputs[2]?.checked;
-        PostUserCredits(email, password, remember, dispatcher)
+        GetUserToken(email, password, remember, dispatcher)
         setIsLoading(true)
     }
 

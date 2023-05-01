@@ -1,6 +1,46 @@
 import { UserInterface } from "./models/UserInterface";
 import { login } from "./store/userSlice";
 
+enum RequestMethods { get = 'GET', post = 'POST', put = 'PUT' }
+
+/**
+ * Fetch API function
+ * @param method 
+ * @param route 
+ * @param token 
+ * @param body 
+ * @returns body Response || error Response
+ */
+const FetchData = async (
+    method: RequestMethods,
+    route: string,
+    token: string | null,
+    body: Object | null
+) => {
+    return await fetch(process.env.REACT_APP_API_URL + route, {
+        method: method,
+        headers: {
+            "Content-Type": "application/json",
+            'Accept': 'application/json',
+            'Authorization': token ? 'Bearer ' + token : '',
+        },
+        body: body ? JSON.stringify(body) : null
+    })
+        .then((res) => res.json())
+        .then((json) => {
+            if (200 == json.status) {
+                return json.body
+            } else {
+                throw new Error(json.message)
+            }
+        })
+        .catch((err) => {
+            return new Response(err.message, {
+                status: err.status, statusText: err.message
+            })
+        })
+}
+
 /**
  * POST User creditentials, then return User bearer JWT Token
  * @param email User email
@@ -9,59 +49,48 @@ import { login } from "./store/userSlice";
  * @param dispatch Redux Dispatcher
  * @returns Promise
 */
-const PostUserCredits: (
+const GetUserToken: (
     email: string,
     password: string,
     isRemembered: boolean,
     dispatch: any
 ) => void = async (email, password, isRemembered, dispatch) => {
 
-    await fetch(process.env.REACT_APP_API_URL + 'user/login', {
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json",
-            'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-            "email": email,
-            "password": password
-        })
-    })
-        .then((res) => res.json())
+    const body = {
+        "email": email,
+        "password": password
+    }
+
+    return await FetchData(RequestMethods.post, 'user/login', null, body)
         .then((data) => {
-
-            // If response is OK
-            // Set user token into redux store
-            if (data.status === 200) {
-                const userCredits: UserInterface = {
-                    'email': email,
-                    'token': data.body.token,
-                    'isConnected': true,
-                    'error': null
-                }
-                dispatch(login(userCredits))
-
-                // If remeberMe checkbox is checked
-                // Create / update cookies with user token
-                if (isRemembered) {
-                    document.cookie = `USER=${JSON.stringify(userCredits)}`
-                }
-
+            const userCredits: UserInterface = {
+                'email': email,
+                'token': data.token,
+                'isConnected': true,
+                'error': null
             }
-            // If response in not OK (error send from API)
-            // Set the error message into redux store
-            // (used from display error message in login form)
-            else {
-                dispatch(login({
-                    'error': data.message
-                }))
-            }
+            dispatch(login(userCredits))
 
+            // If remeberMe checkbox is checked
+            // Create / update cookies with user token
+            if (isRemembered) {
+                document.cookie = `USER=${JSON.stringify(userCredits)}`
+            }
         })
-        .catch((err) => { console.log(err) })
 }
 
+/**
+ * POST | Returns User profile
+ * @param token JWT User token
+ * @returns UserProfile
+ */
+const GetUserProfile = async (token: string) => {
+    return await FetchData(
+        RequestMethods.post, 'user/profile', token, null
+    )
+}
 
 export {
-    PostUserCredits,
+    GetUserToken,
+    GetUserProfile
 }
