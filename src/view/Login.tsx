@@ -1,5 +1,5 @@
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { GetUserToken } from "../api";
+import { GetUserProfile, GetUserToken } from "../api";
 import { useDispatch, useSelector } from "react-redux";
 import { FormEvent, ReactElement, useEffect, useState } from "react";
 import { AppDispatch, RootState } from "../store/store";
@@ -17,11 +17,13 @@ export default function Login(): ReactElement {
     const user: UserInterface = useSelector((state: RootState) => state.user)
 
     useEffect(() => {
-        if (user && user.isConnected) {
+        if (user && user.token && user.firstName) {
             setTimeout(() => {
                 setIsLoading(false)
                 navigate('/profile')
             }, 1000)
+        } else if (user.error) {
+            setIsLoading(false)
         }
     }, [user])
 
@@ -30,14 +32,22 @@ export default function Login(): ReactElement {
      * Get & send datas from login form to Api
      * @param e FormEvent
      */
-    function HandleSubmit(e: FormEvent<HTMLFormElement>): void {
+    function HandleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         const form: HTMLFormElement = e.currentTarget;
         const formInputs = form.getElementsByTagName("input");
         const email: string = formInputs[0]?.value
         const password: string = formInputs[1]?.value;
         const remember: boolean = formInputs[2]?.checked;
-        GetUserToken(email, password, remember, dispatcher)
+
+        Promise.resolve(
+            GetUserToken(email, password, dispatcher)
+        )
+            .then(token => {
+                GetUserProfile(token, remember, dispatcher)
+            })
+            .catch(err => console.log(err.message))
+
         setIsLoading(true)
     }
 

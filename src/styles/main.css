@@ -46,9 +46,11 @@ body {
   padding: 5px 20px;
 }
 
-.main-nav a {
+.main-nav a,
+.main-nav button {
   font-weight: bold;
   color: #2c3e50;
+  font-size: 18px;
 }
 
 .main-nav a.router-link-exact-active {
@@ -62,6 +64,11 @@ body {
 
 .main-nav-item:hover {
   text-decoration: underline;
+}
+
+.logout-btn {
+  border: none;
+  background: none;
 }
 
 .main-nav-logo {

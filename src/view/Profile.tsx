@@ -1,33 +1,24 @@
 import { ReactElement, useEffect, useState } from "react";
 import { UserInterface } from "../models/UserInterface";
 import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
+import { AppDispatch, RootState } from "../store/store";
 import { GetUserProfile } from "../api";
+import { useDispatch } from "react-redux";
 
 /**
  * User Profile page
  * @returns ReactElement
  */
 export default function Profile(): ReactElement {
-    const [userProfile, setUserProfile] = useState<any>(null)
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const user: UserInterface = useSelector((state: RootState) => state.user)
 
     useEffect(() => {
 
-        async function fetchData(token: string) {
-            const profileResponse = await GetUserProfile(token)
-            setUserProfile(profileResponse)
-        }
-
-        if (user.token && !userProfile) {
-            fetchData(user.token)
-        }
-
-        if (userProfile && userProfile.firstName) {
+        if (user && user.firstName) {
             setIsLoading(false)
         }
-    }, [userProfile])
+    }, [user])
 
     return (
         <>
@@ -35,7 +26,7 @@ export default function Profile(): ReactElement {
                 {isLoading ? null :
                     <>
                         <div className="header">
-                            <h1>Welcome back<br />{userProfile?.firstName} {userProfile?.lastName}</h1>
+                            <h1>Welcome back<br />{user?.firstName} {user?.lastName}</h1>
                             <button className="edit-button">Edit Name</button>
                         </div>
                         <h2 className="sr-only">Accounts</h2>

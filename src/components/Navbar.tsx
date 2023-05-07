@@ -1,6 +1,36 @@
-import { Link } from "react-router-dom";
+import { Link, NavigateFunction, useNavigate } from "react-router-dom";
+import { UserInterface } from "../models/UserInterface";
+import { useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store/store";
+import { ReactElement, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { logout } from "../store/userSlice";
 
-export default function Navbar() {
+/**
+ * Navbar Component
+ * @returns ReactElement
+ */
+export default function Navbar(): ReactElement {
+
+    const dispatch: AppDispatch = useDispatch()
+    const navigate: NavigateFunction = useNavigate()
+    const user: UserInterface = useSelector((state: RootState) => state.user)
+
+    const rememberedUser: UserInterface | null = document.cookie ?
+        JSON.parse(document.cookie.split("=")[1]) : null;
+
+    /**
+     * Handle Logout click button
+     * Logout User, remove cookies and return to Login page
+     */
+    const handleLogout = () => {
+        if (rememberedUser) {
+            document.cookie = 'USER=;Max-Age=-99999999;'
+        }
+        dispatch(logout())
+        navigate('/login', { replace: true })
+    }
+
     return (
         <nav className="main-nav">
             <Link className="main-nav-logo" to={'/'}>
@@ -12,10 +42,23 @@ export default function Navbar() {
                 <h1 className="sr-only">Argent Bank</h1>
             </Link>
             <div>
-                <Link className="main-nav-item" to={'/login'}>
-                    <i className="fa fa-user-circle"></i>
-                    Sign In
-                </Link>
+                {user?.token ?
+                    <>
+                        <Link className="main-nav-item" to={'/profile'}>
+                            <i className="fa fa-user-circle"></i>
+                            {user?.firstName}
+                        </Link>
+                        <button className="main-nav-item logout-btn" onClick={handleLogout}>
+                            <i className="fa fa-sign-out"></i>
+                            Sign Out
+                        </button>
+                    </>
+                    :
+                    <Link className="main-nav-item" to={'/login'}>
+                        <i className="fa fa-user-circle"></i>
+                        Sign In
+                    </Link>}
+
             </div>
         </nav>
     )

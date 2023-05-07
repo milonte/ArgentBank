@@ -34,17 +34,17 @@ export default function App(): ReactElement {
   useEffect(() => {
     // If an user is registred in cookies, then store him 
     // And redirect user to dthe default authentified page
-    if ("/login" === pathname && rememberedUser && rememberedUser.isConnected) {
+    if ("/login" === pathname && rememberedUser && rememberedUser.token) {
       dispatch(login(rememberedUser))
       navigate('/profile', { replace: true })
     }
 
     // Back to the Login page if no user in protected route
-    if (authRequiredRoutes.includes(pathname) && !user.isConnected) {
+    if (authRequiredRoutes.includes(pathname) && !user.token) {
       navigate('/login', { replace: true })
     }
     // Redirect to the default authentified page (profile) if user logged
-    else if ("/login" === pathname && user.isConnected) {
+    else if ("/login" === pathname && user.token) {
       navigate('/profile', { replace: true })
     }
   }, [pathname])

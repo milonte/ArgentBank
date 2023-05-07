@@ -5,12 +5,16 @@ export const userSlice = createSlice({
     initialState: {
         isConnected: false,
         email: null,
+        firstName: null,
+        lastName: null,
         token: null,
         error: null
     },
     reducers: {
         login: (state, action) => {
             state.email = action.payload.email;
+            state.firstName = action.payload.firstName;
+            state.lastName = action.payload.lastName;
             if (action.payload.error) {
                 state.error = action.payload.error
             } else {
@@ -21,6 +25,8 @@ export const userSlice = createSlice({
         },
         logout: (state) => {
             state.email = null;
+            state.firstName = null;
+            state.lastName = null;
             state.token = null;
             state.isConnected = false;
         }
