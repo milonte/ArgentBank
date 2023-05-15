@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 export const userSlice = createSlice({
     name: "user",
     initialState: {
-        isConnected: false,
         email: null,
         firstName: null,
         lastName: null,
@@ -19,7 +18,6 @@ export const userSlice = createSlice({
                 state.error = action.payload.error
             } else {
                 state.error = null;
-                state.isConnected = true;
                 state.token = action.payload.token;
             }
         },
@@ -28,7 +26,6 @@ export const userSlice = createSlice({
             state.firstName = null;
             state.lastName = null;
             state.token = null;
-            state.isConnected = false;
         }
     }
 })

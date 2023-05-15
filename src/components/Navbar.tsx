@@ -15,9 +15,15 @@ export default function Navbar(): ReactElement {
     const dispatch: AppDispatch = useDispatch()
     const navigate: NavigateFunction = useNavigate()
     const user: UserInterface = useSelector((state: RootState) => state.user)
-
     const rememberedUser: UserInterface | null = document.cookie ?
         JSON.parse(document.cookie.split("=")[1]) : null;
+
+    // Need this to update user name on navbar when user updated
+    /* const [userToken, setUserToken] = useState<string | null>('')
+    useEffect(() => {
+        // If an User is connected, set his token, else set null
+        setUserToken(user.token || null)
+    }, [user]) */
 
     /**
      * Handle Logout click button
@@ -28,7 +34,7 @@ export default function Navbar(): ReactElement {
             document.cookie = 'USER=;Max-Age=-99999999;'
         }
         dispatch(logout())
-        navigate('/login', { replace: true })
+        navigate('/', { replace: true })
     }
 
     return (
@@ -42,11 +48,11 @@ export default function Navbar(): ReactElement {
                 <h1 className="sr-only">Argent Bank</h1>
             </Link>
             <div>
-                {user?.token ?
+                {user.token ?
                     <>
                         <Link className="main-nav-item" to={'/profile'}>
                             <i className="fa fa-user-circle"></i>
-                            {user?.firstName}
+                            {user.firstName}
                         </Link>
                         <button className="main-nav-item logout-btn" onClick={handleLogout}>
                             <i className="fa fa-sign-out"></i>

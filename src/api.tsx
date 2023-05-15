@@ -48,7 +48,7 @@ const FetchData: (
  * @param email User email
  * @param password User password
  * @param dispatch Redux Dispatcher
- * @returns Promise
+ * @returns Promise - user TWT token
 */
 const GetUserToken: (
     email: string,
@@ -82,6 +82,7 @@ const GetUserProfile: (
     isRemembered: boolean,
     dispatch: AppDispatch
 ) => void = async (token, isRemembered, dispatch) => {
+
     await FetchData(
         RequestMethods.post, 'user/profile', token, null
     ).then(data => {
@@ -102,7 +103,52 @@ const GetUserProfile: (
     })
 }
 
+/**
+ * PUT | Update user firstname & lastname
+ * @param user current user
+ * @param firstName desired firstName
+ * @param lastName desired lastName
+ * @param dispatch AppDispatch
+ * @returns Promise - User updated
+ */
+const UpdateUserProfile: (
+    user: UserInterface,
+    firstName: string,
+    lastName: string,
+    dispatch: AppDispatch
+) => Promise<any> = async (user, firstName, lastName, dispatch) => {
+
+    const body = {
+        "firstName": firstName,
+        "lastName": lastName
+    }
+
+    return await FetchData(
+        RequestMethods.put, 'user/profile', user.token, body
+    ).then(data => {
+        if (data.firstName && data.lastName) {
+            dispatch(login({
+                ...user,
+                'firstName': data.firstName,
+                'lastName': data.lastName,
+            }))
+
+            if (document.cookie.includes("USER")) {
+
+                document.cookie = `USER=${JSON.stringify({
+                    'email': user.email,
+                    'firstName': data.firstName,
+                    'lastName': data.lastName,
+                    'token': user.token
+                })}`
+            }
+            return data
+        }
+    })
+}
+
 export {
     GetUserToken,
-    GetUserProfile
+    GetUserProfile,
+    UpdateUserProfile
 }
