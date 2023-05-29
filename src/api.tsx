@@ -1,4 +1,5 @@
 import { UserInterface } from "./models/UserInterface";
+import { GetCookie, SetCookie } from "./services/CookieService";
 import { AppDispatch } from "./store/store";
 import { login } from "./store/userSlice";
 
@@ -97,7 +98,7 @@ const GetUserProfile: (
             dispatch(login(userCredits))
 
             if (isRemembered) {
-                document.cookie = `USER=${JSON.stringify(userCredits)}`
+                SetCookie('user', userCredits)
             }
         }
     })
@@ -127,20 +128,16 @@ const UpdateUserProfile: (
         RequestMethods.put, 'user/profile', user.token, body
     ).then(data => {
         if (data.firstName && data.lastName) {
-            dispatch(login({
+
+            const userCredits: UserInterface = {
                 ...user,
                 'firstName': data.firstName,
                 'lastName': data.lastName,
-            }))
+            }
+            dispatch(login(userCredits))
 
-            if (document.cookie.includes("USER")) {
-
-                document.cookie = `USER=${JSON.stringify({
-                    'email': user.email,
-                    'firstName': data.firstName,
-                    'lastName': data.lastName,
-                    'token': user.token
-                })}`
+            if (GetCookie('user')) {
+                SetCookie('user', userCredits)
             }
             return data
         }

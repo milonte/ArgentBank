@@ -14,8 +14,6 @@ export default function Profile(): ReactElement {
     const dispatcher: AppDispatch = useDispatch()
     const user: UserInterface = useSelector((state: RootState) => state.user)
 
-
-
     useEffect(() => {
 
         if (user && user.firstName) {
@@ -61,7 +59,6 @@ export default function Profile(): ReactElement {
             hideUpdateForm();
         }
     }
-
     return (
         <>
             <main className="main bg-dark">

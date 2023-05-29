@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { FormEvent, ReactElement, useEffect, useState } from "react";
 import { AppDispatch, RootState } from "../store/store";
 import { UserInterface } from "../models/UserInterface";
-
+import { GetCookie } from "../services/CookieService";
+import { login } from "../store/userSlice";
 
 /**
  * Login Page
@@ -13,10 +14,19 @@ import { UserInterface } from "../models/UserInterface";
 export default function Login(): ReactElement {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const navigate: NavigateFunction = useNavigate()
-    const dispatcher: AppDispatch = useDispatch()
+    const dispatch: AppDispatch = useDispatch()
     const user: UserInterface = useSelector((state: RootState) => state.user)
+    const userCookie = GetCookie('user')
 
     useEffect(() => {
+        // If an user is registred in cookies, then store him 
+        // And redirect user to dthe default authentified page
+        if (userCookie && userCookie.token && userCookie.firstName) {
+            dispatch(login(userCookie))
+            setIsLoading(false)
+            navigate('/profile')
+        }
+
         if (user && user.token && user.firstName) {
             setTimeout(() => {
                 setIsLoading(false)
@@ -41,10 +51,10 @@ export default function Login(): ReactElement {
         const remember: boolean = formInputs[2]?.checked;
 
         Promise.resolve(
-            GetUserToken(email, password, dispatcher)
+            GetUserToken(email, password, dispatch)
         )
             .then(token => {
-                GetUserProfile(token, remember, dispatcher)
+                GetUserProfile(token, remember, dispatch)
             })
             .catch(err => console.log(err.message))
 

@@ -5,6 +5,7 @@ import { AppDispatch, RootState } from "../store/store";
 import { ReactElement, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/userSlice";
+import { RemoveCookie } from "../services/CookieService";
 
 /**
  * Navbar Component
@@ -18,20 +19,13 @@ export default function Navbar(): ReactElement {
     const rememberedUser: UserInterface | null = document.cookie ?
         JSON.parse(document.cookie.split("=")[1]) : null;
 
-    // Need this to update user name on navbar when user updated
-    /* const [userToken, setUserToken] = useState<string | null>('')
-    useEffect(() => {
-        // If an User is connected, set his token, else set null
-        setUserToken(user.token || null)
-    }, [user]) */
-
     /**
      * Handle Logout click button
      * Logout User, remove cookies and return to Login page
      */
     const handleLogout = () => {
         if (rememberedUser) {
-            document.cookie = 'USER=;Max-Age=-99999999;'
+            RemoveCookie('user')
         }
         dispatch(logout())
         navigate('/', { replace: true })
