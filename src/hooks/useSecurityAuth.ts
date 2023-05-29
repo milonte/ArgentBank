@@ -10,7 +10,6 @@ import { login } from "../store/userSlice";
  * Global Navigation Security Hook
  */
 export function useSecurityAuth() {
-    const dispatch: AppDispatch = useDispatch()
     const navigate: NavigateFunction = useNavigate()
     const location: Location = useLocation()
     const user: UserInterface = useSelector((state: RootState) => state.user)
@@ -26,13 +25,6 @@ export function useSecurityAuth() {
     const LOGIN_PATH: string = "/login"
 
     useEffect(() => {
-        // If an user is registred in cookies, then store him 
-        // And redirect user to dthe default authentified page
-        /* if (LOGIN_PATH === pathname && rememberedUser && rememberedUser.token) {
-            dispatch(login(rememberedUser))
-            navigate("/profile", { replace: true })
-        } */
-
         // Back to the Login page if no user in protected route
         if (AUTH_REQUIRED_ROUTES.includes(pathname) && !user.token) {
             navigate(LOGIN_PATH, { replace: true })

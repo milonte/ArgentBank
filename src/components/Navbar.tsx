@@ -2,7 +2,7 @@ import { Link, NavigateFunction, useNavigate } from "react-router-dom";
 import { UserInterface } from "../models/UserInterface";
 import { useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement } from "react";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/userSlice";
 import { RemoveCookie } from "../services/CookieService";
