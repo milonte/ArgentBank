@@ -36,7 +36,7 @@ const FetchData: (
     })
         .then((res) => res.json())
         .then((json) => {
-            if (200 == json.status) {
+            if (200 === json.status) {
                 return json.body
             } else {
                 throw new Error(json.message)
